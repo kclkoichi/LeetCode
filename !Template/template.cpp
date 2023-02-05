@@ -17,6 +17,7 @@ using namespace std;
 
 typedef long long ll;
 
+// Kattis
 int main() {
   freopen("in.txt", "r", stdin);
   ios_base::sync_with_stdio(false); cin.tie(NULL);
@@ -31,5 +32,12 @@ int main() {
     
   }
 
+  return 0;
+}
+
+// LeetCode
+int main() {
+  Solution s;
+  cout << s.someFunction() << endl;
   return 0;
 }
