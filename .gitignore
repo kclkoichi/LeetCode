@@ -2,5 +2,5 @@
 .vscode/*
 
 # Mac/OSX
-.DS_Store
+*/*.DS_Store
 */*.dSYM
