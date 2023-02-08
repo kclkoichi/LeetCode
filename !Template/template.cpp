@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <algorithm> // max
 #include <string>
 #include <algorithm> // sort, stable_sort
 
