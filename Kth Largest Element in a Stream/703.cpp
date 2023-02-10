@@ -1,28 +1,32 @@
+#include <queue>
 #include <vector>
-#include <algorithm>
 using namespace std;
+
+// Custom comparator to make a min heap
+// does same as comparator greater<int>
+class Compare {
+  public:
+    bool operator() (int a, int b) {
+        return a > b;
+    }
+};
 
 class KthLargest {
 public:
-    vector<int> vect;
+    // PQ using custom comparator
+    priority_queue<int, vector<int>, Compare> pq;
     int kthlargest;
 
     KthLargest(int k, vector<int>& nums) {
         kthlargest = k;
-        sort(nums.begin(), nums.end());
-        vect = nums;
+        for(int i : nums) pq.push(i);
+        while(pq.size() > kthlargest) pq.pop(); // Pop all smaller than kth largest
     }
     
     int add(int val) {
-      vect.emplace_back(val);
-      int next = vect.size() - 1;
-      while(next >= 1 && vect[next - 1] > vect[next]) {
-          int temp = vect[next];
-          vect[next] = vect[next - 1];
-          vect[next - 1] = temp; 
-          next--;
-      }
-      return vect[vect.size() - kthlargest];
+      pq.push(val);
+      if(pq.size() > kthlargest) pq.pop(); // pop k+1 e.g 4th largest if want 3rd largest
+      return pq.top();
     }
 };
 
