@@ -1,5 +1,4 @@
 #include <vector>
-#include <stack>
 using namespace std;
 
 struct TreeNode {
@@ -13,20 +12,17 @@ struct TreeNode {
 
 class Solution {
 public:
+  void dfsRight(TreeNode* root, int depth, vector<int>& sol) {
+    if(root == nullptr) return;
+    if(depth > (int) sol.size() - 1) sol.push_back(root->val);
+    dfsRight(root->right, depth+1, sol);
+    dfsRight(root->left, depth+1, sol);
+  }
+
+  // Use recursive stack instead of real stack
   vector<int> rightSideView(TreeNode* root) {
     vector<int> sol;
-    if(root == nullptr) return sol; // edge case
-    stack<pair<int,TreeNode*>> s; // depth,node
-    s.push(make_pair(0, root));
-    while(!s.empty()) {
-      int curDepth = s.top().first;
-      TreeNode* curNode = s.top().second;
-      s.pop();
-      // need to cast to int because CANNOT COMPARE SIGNED and UNSIGNED in C++
-      if(curDepth > (int) sol.size() - 1) sol.push_back(curNode->val);
-      if(curNode->left != nullptr) s.push(make_pair(curDepth+1, curNode->left));
-      if(curNode->right != nullptr) s.push(make_pair(curDepth+1, curNode->right)); // we push right later because we want right to be treated first
-    }
+    dfsRight(root, 0, sol);
     return sol;
   }
 };
