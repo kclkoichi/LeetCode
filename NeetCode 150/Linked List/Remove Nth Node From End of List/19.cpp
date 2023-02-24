@@ -16,7 +16,7 @@ public:
   ListNode* removeNthFromEnd(ListNode* head, int n) {
     int length = size(head,0);
     int del = length-n;
-    if(del == 0) return head->next;
+    if(del == 0) return head->next; // edge case
     
     ListNode* prev = nullptr;
     ListNode* cur = head;
