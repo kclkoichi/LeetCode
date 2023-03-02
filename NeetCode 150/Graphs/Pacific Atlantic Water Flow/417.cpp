@@ -1,57 +1,76 @@
 #include <vector>
-#include <stack>
+#include <iostream>
 using namespace std;
 
 class Solution {
 public:
   vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
     vector<vector<int>> sol;
-    vector<vector<bool>> reachable (heights.size(), vector<bool> (heights[0].size()));
+    vector<vector<bool>> reachablePacific (heights.size(), vector<bool> (heights[0].size()));
+    vector<vector<bool>> reachableAtlantic (heights.size(), vector<bool> (heights[0].size()));
+    // From West (Pacific)
+    for(int i = 0; i < heights.size(); i++) {
+      int col = 0;
+      int cur = heights[i][col];
+      while(col < heights[0].size()) {
+        if(heights[i][col] < cur) break; // if next is smaller break
+        reachablePacific[i][col] = true;
+        cur = heights[i][col];
+        col++;
+      }
+    }
+    // From North (Pacific)
+    for(int i = 0; i < heights[0].size(); i++) {
+      int row = 0;
+      int cur = heights[row][i];
+      while(row < heights.size()) {
+        if(heights[row][i] < cur) break;
+        reachablePacific[row][i] = true;
+        cur = heights[row][i];
+        row++;
+      }
+    }
+    // From East (Atlantic)
+    for(int i = 0; i < heights.size(); i++) {
+      int col = heights[0].size() - 1;
+      int cur = heights[i][col];
+      while(col >= 0) {
+        if(heights[i][col] < cur) break;
+        reachableAtlantic[i][col] = true;
+        cur = heights[i][col];
+        col--;
+      }
+    }
+    // From South (Atlantic)
+    for(int i = 0; i < heights[0].size(); i++) {
+      int row = heights.size() - 1;
+      int cur = heights[row][i];
+      while(row >= 0) {
+        if(heights[row][i] < cur) break;
+        reachableAtlantic[row][i] = true;
+        cur = heights[row][i];
+        row--;
+      }
+    }
+
     for(int i = 0; i < heights.size(); i++) {
       for(int j = 0; j < heights[i].size(); j++) {
-        vector<vector<bool>> visited (heights.size(), vector<bool> (heights[i].size()));
-        stack<vector<int>> st; 
-        st.push(vector<int> {i, j});
-        bool pacific = false;
-        bool atlantic = false;
-        // dfs
-        while(!st.empty()) {
-          int row = st.top()[0];
-          int col = st.top()[1];
-          st.pop();
-          // Set visited
-          if(visited[row][col]) continue;
-          visited[row][col] = true;
-          if(row == 0) {
-            pacific = true;
-          } else {
-            if(reachable[row-1][col] && heights[row][col] >= heights[row-1][col]) { pacific = true; atlantic = true; break; }
-            if(!visited[row-1][col] && heights[row][col] >= heights[row-1][col]) st.push(vector<int> { row-1, col }); // W
-          }
-          if(row == heights.size() - 1) {
-            atlantic = true;
-          } else {
-            if(reachable[row+1][col] && heights[row][col] >= heights[row+1][col]) { pacific = true; atlantic = true; break; }
-            if(!visited[row+1][col] && heights[row][col] >= heights[row+1][col]) st.push(vector<int> { row+1, col }); // E
-          }
-          if(col == 0) {
-            pacific = true;
-          } else {
-            if(reachable[row][col-1] && heights[row][col] >= heights[row][col-1]) { pacific = true; atlantic = true; break; }
-            if(!visited[row][col-1] && heights[row][col] >= heights[row][col-1]) st.push(vector<int> { row, col-1 }); // N
-          }
-          if(col == heights[i].size() - 1) {
-            atlantic = true;
-          } else {
-            if(reachable[row][col+1] && heights[row][col] >= heights[row][col+1]) { pacific = true; atlantic = true; break; }
-            if(!visited[row][col+1] && heights[row][col] >= heights[row][col+1]) st.push(vector<int> { row, col+1 }); // S
-          }
-          if(pacific && atlantic) break;
-        }
-        if(pacific && atlantic) {
-          sol.push_back(vector<int> { i,j });
-          reachable[i][j] = true;
-        }
+        cout << reachablePacific[i][j] << " ";
+      }
+      cout << "\n";
+    }
+    cout << "\n";
+    for(int i = 0; i < heights.size(); i++) {
+      for(int j = 0; j < heights[i].size(); j++) {
+        cout << reachableAtlantic[i][j] << " ";
+      }
+      cout << "\n";
+    }
+
+    // Check intersection
+    for(int i = 0; i < heights.size(); i++) {
+      for(int j = 0; j < heights[i].size(); j++) {
+        if(reachableAtlantic[i][j] && reachablePacific[i][j]) sol.push_back(vector<int> { i, j });
       }
     }
     return sol;
