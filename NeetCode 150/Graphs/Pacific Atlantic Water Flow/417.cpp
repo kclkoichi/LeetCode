@@ -1,4 +1,5 @@
 #include <vector>
+#include <stack>
 #include <iostream>
 using namespace std;
 
@@ -8,48 +9,46 @@ public:
     vector<vector<int>> sol;
     vector<vector<bool>> reachablePacific (heights.size(), vector<bool> (heights[0].size()));
     vector<vector<bool>> reachableAtlantic (heights.size(), vector<bool> (heights[0].size()));
-    // From West (Pacific)
-    for(int i = 0; i < heights.size(); i++) {
-      int col = 0;
-      int cur = heights[i][col];
-      while(col < heights[0].size()) {
-        if(heights[i][col] < cur) break; // if next is smaller break
-        reachablePacific[i][col] = true;
-        cur = heights[i][col];
-        col++;
+    // West and North (Pacific)
+    stack<vector<int>> pacificStack;
+    for(int i = 0; i < heights.size(); i++) pacificStack.push(vector<int> { i, 0, -1 });
+    for(int i = 0; i < heights[0].size(); i++) pacificStack.push(vector<int> { 0, i, -1 });
+    // East and South (Atlantic)
+    stack<vector<int>> atlanticStack;
+    for(int i = 0; i < heights.size(); i++) atlanticStack.push(vector<int> { i, (int) heights[0].size() - 1, -1 });
+    for(int i = 0; i < heights[0].size(); i++) atlanticStack.push(vector<int> { (int) heights.size() - 1, i, -1 });
+
+    while(!pacificStack.empty()) {
+      int row = pacificStack.top()[0];
+      int col = pacificStack.top()[1];
+      int prevVal = pacificStack.top()[2];
+      pacificStack.pop();
+      if(row < 0 || row > heights.size() - 1 || col < 0 || col > heights[0].size() - 1) continue; // invalid position
+      // DFS
+      if(!reachablePacific[row][col] && heights[row][col] >= prevVal) {
+        reachablePacific[row][col] = true;
+        prevVal = heights[row][col];
+        pacificStack.push(vector<int> {row - 1, col, prevVal});
+        pacificStack.push(vector<int> {row, col - 1, prevVal});
+        pacificStack.push(vector<int> {row + 1, col, prevVal});
+        pacificStack.push(vector<int> {row, col + 1, prevVal});
       }
     }
-    // From North (Pacific)
-    for(int i = 0; i < heights[0].size(); i++) {
-      int row = 0;
-      int cur = heights[row][i];
-      while(row < heights.size()) {
-        if(heights[row][i] < cur) break;
-        reachablePacific[row][i] = true;
-        cur = heights[row][i];
-        row++;
-      }
-    }
-    // From East (Atlantic)
-    for(int i = 0; i < heights.size(); i++) {
-      int col = heights[0].size() - 1;
-      int cur = heights[i][col];
-      while(col >= 0) {
-        if(heights[i][col] < cur) break;
-        reachableAtlantic[i][col] = true;
-        cur = heights[i][col];
-        col--;
-      }
-    }
-    // From South (Atlantic)
-    for(int i = 0; i < heights[0].size(); i++) {
-      int row = heights.size() - 1;
-      int cur = heights[row][i];
-      while(row >= 0) {
-        if(heights[row][i] < cur) break;
-        reachableAtlantic[row][i] = true;
-        cur = heights[row][i];
-        row--;
+
+    while(!atlanticStack.empty()) {
+      int row = atlanticStack.top()[0];
+      int col = atlanticStack.top()[1];
+      int prevVal = atlanticStack.top()[2];
+      atlanticStack.pop();
+      if(row < 0 || row > heights.size() - 1 || col < 0 || col > heights[0].size() - 1) continue; // invalid position
+      // DFS
+      if(!reachableAtlantic[row][col] && heights[row][col] >= prevVal) {
+        reachableAtlantic[row][col] = true;
+        prevVal = heights[row][col];
+        atlanticStack.push(vector<int> {row - 1, col, prevVal});
+        atlanticStack.push(vector<int> {row, col - 1, prevVal});
+        atlanticStack.push(vector<int> {row + 1, col, prevVal});
+        atlanticStack.push(vector<int> {row, col + 1, prevVal});
       }
     }
 
