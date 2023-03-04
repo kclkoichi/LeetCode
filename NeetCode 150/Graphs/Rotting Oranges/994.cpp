@@ -16,6 +16,7 @@ public:
         if(grid[i][j] == 2) q.push(make_pair(i, j));
       }
     }
+    if(count == 0) return 0; // there was no orange...
     
     vector<pair<int, int>> dir { make_pair(-1, 0), make_pair(0, 1), make_pair(1, 0), make_pair(0, -1) };
     while(!q.empty()) {
