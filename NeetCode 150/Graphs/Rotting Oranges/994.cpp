@@ -7,50 +7,36 @@ using namespace std;
 class Solution {
 public:
   int orangesRotting(vector<vector<int>>& grid) {
-    vector<vector<int>> time = vector(grid.size(), vector(grid[0].size(), INT_MAX));
+    queue<pair<int,int>> q;
+    int time = -1;
+    int count = 0;
     for(int i = 0; i < grid.size(); i++) {
       for(int j = 0; j < grid[0].size(); j++) {
-        if(grid[i][j] == 2) {
-          vector<vector<bool>> vis = vector(grid.size(), vector(grid[0].size(), false));
-          queue<vector<int>> q;
-          q.push(vector<int> { i-1, j, 1 });
-          q.push(vector<int> { i, j-1, 1 });
-          q.push(vector<int> { i+1, j, 1 });
-          q.push(vector<int> { i, j+1, 1 });
-          // BFS
-          while(!q.empty()) {
-            int row = q.front()[0];
-            int col = q.front()[1];
-            int curTime = q.front()[2];
-            q.pop();
-            if(row < 0 || col < 0 || row > grid.size() - 1 || col > grid[0].size() - 1) continue; 
-            if(grid[row][col] == 0 || grid[row][col] == 2) continue; // no orange or already rotten
-            if(curTime < time[row][col]) time[row][col] = curTime;
-            if(!vis[row][col]) {
-              vis[row][col] = true;
-              q.push(vector<int> { row-1, col, curTime+1 });
-              q.push(vector<int> { row, col-1, curTime+1 });
-              q.push(vector<int> { row+1, col, curTime+1 });
-              q.push(vector<int> { row, col+1, curTime+1 });
-            }
+        if(grid[i][j] == 1) count++;
+        if(grid[i][j] == 2) q.push(make_pair(i, j));
+      }
+    }
+    
+    vector<pair<int, int>> dir { make_pair(-1, 0), make_pair(0, 1), make_pair(1, 0), make_pair(0, -1) };
+    while(!q.empty()) {
+      int size = q.size();
+      while(size > 0) {
+        int row = q.front().first;
+        int col = q.front().second;
+        q.pop();
+        for(pair<int, int> p : dir) {
+          if(row+p.first < 0 || col+p.second < 0 || row+p.first > grid.size() - 1 || col+p.second > grid[0].size() - 1) continue;
+          if(grid[row+p.first][col+p.second] == 1) {
+            grid[row+p.first][col+p.second] = 2; // now rotten
+            count--;
+            q.push(make_pair(row+p.first, col+p.second));
           }
         }
+        size--;
       }
-    }
-    for(int i = 0; i < grid.size(); i++) {
-      for(int j = 0; j < grid[0].size(); j++) {
-        cout << time[i][j] << " ";
-      }
-      cout << "\n";
+      time++; // one minute elapsed
     }
 
-    int maxTime = 0;
-    for(int i = 0; i < grid.size(); i++) {
-      for(int j = 0; j < grid[0].size(); j++) {
-        if(time[i][j] != INT_MAX && time[i][j] > maxTime) maxTime = time[i][j];
-        if(time[i][j] == INT_MAX && grid[i][j] == 1) return -1; // one orange is not reachable (cannot become rotten)
-      }
-    }
-    return maxTime;
+    return count == 0 ? time : -1;
   }
 };
