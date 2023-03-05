@@ -4,22 +4,25 @@ using namespace std;
 
 class Solution {
 public:
-  bool dfs(int cur, vector<vector<int>>& graph, unordered_set<int>& vis) {
+  bool dfs(int cur, vector<vector<int>>& graph, unordered_set<int>& vis, unordered_set<int>& completed) {
     vis.insert(cur);
     for(int neighbour : graph[cur]) {
+      if(completed.find(neighbour) != completed.end()) continue; // We already completed that course
       if(vis.find(neighbour) != vis.end()) return true; // cycle detected
-      if(dfs(neighbour, graph, vis)) return true;
+      if(dfs(neighbour, graph, vis, completed)) return true;
     }
-    vis.erase(cur);
+    completed.insert(cur);
     return false; // no cycle
   }
 
   bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
-    vector<vector<int>> graph = vector<vector<int>>(2001, vector<int> {} );
+    vector<vector<int>> graph = vector<vector<int>>(numCourses, vector<int> {} );
     for(vector<int> pre : prerequisites) graph[pre[0]].push_back(pre[1]); // e.g 1->0 1 needs 0 to be completed first
-    for(int i = 0; i <= 2000; i++) {
+    unordered_set<int> completed;
+    for(int i = 0; i < numCourses; i++) {
       unordered_set<int> vis;
-      if(dfs(i, graph, vis)) return false;
+      if(completed.find(i) != completed.end()) continue; // We already completed it
+      if(dfs(i, graph, vis, completed)) return false;
     }
     return true;
   }
