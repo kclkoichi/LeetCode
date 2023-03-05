@@ -1,8 +1,5 @@
 #include <vector>
 #include <queue>
-#include <map>
-#include <set>
-#include <math.h>
 using namespace std;
 
 class UnionFind {                                // OOP style
@@ -36,37 +33,30 @@ public:
 
 class Solution {
 public:
-  int manhattanDist(vector<int> a, vector<int> b) {
+  int manhattanDist(vector<int>& a, vector<int>& b) {
     return abs(b[0] - a[0]) + abs(b[1] - a[1]);
   }
 
   int minCostConnectPoints(vector<vector<int>>& points) {
-    priority_queue<pair<int, pair<vector<int>, vector<int>>>> minPq; // cost, pair of points
+    priority_queue<pair<int, pair<int, int>>> minPq; // cost, pair of points (stored as index)
     for(int i = 0; i < points.size(); i++) {
-      vector<int> a = points[i];
       for(int j = i+1; j < points.size(); j++) {
-        vector<int> b = points[j];
-        minPq.push(make_pair(-manhattanDist(a,b), make_pair(a,b)));
+        minPq.push(make_pair(-manhattanDist(points[i],points[j]), make_pair(i,j)));
       }
     }
     // Kruskal's algo for MST
-    UnionFind ufds = UnionFind(1000); // max of 1000 points
+    UnionFind ufds = UnionFind(points.size()); // number of points
     int cost = 0;
-    int j = 0;
-    map<pair<int,int>, int> m; // to map point to index in UFDS
     while(!minPq.empty()) {
       int curCost = minPq.top().first;
-      pair<vector<int>, vector<int>> curPoints = minPq.top().second; 
+      int a = minPq.top().second.first; 
+      int b = minPq.top().second.second; 
       minPq.pop();
-      pair<int,int> a = make_pair(curPoints.first[0], curPoints.first[1]);
-      pair<int,int> b = make_pair(curPoints.second[0], curPoints.second[1]);
-      // Mapping points to index in UFDS
-      if(m.find(a) == m.end()) m[a] = j++;
-      if(m.find(b) == m.end()) m[b] = j++;
       int prevNum = ufds.numDisjointSets();
-      ufds.unionSet(m[a], m[b]);
+      ufds.unionSet(a, b);
       if(ufds.numDisjointSets() == prevNum) continue; // the points were already connected
       cost+=(curCost*-1);
+      if(ufds.numDisjointSets() == 1) break; // everything is already connected
     }
     return cost;
   }
