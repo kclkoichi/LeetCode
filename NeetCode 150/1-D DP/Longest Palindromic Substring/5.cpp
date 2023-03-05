@@ -4,22 +4,30 @@ using namespace std;
 
 class Solution {
 public:
-  bool isPalindrome(string s) {
-    int start = 0;
-    int end = s.size()-1;
-    while(start < end) {
-      if(s[start] != s[end]) return false;
-      start++; end--;
-    }
-    return true;
-  }
-
   string longestPalindrome(string s) {
-    for(int i = s.size(); i >= 0; i--) {
-      for(int j = 0; j+(i-1)<s.size(); j++) {
-        if(isPalindrome(s.substr(j,i))) return s.substr(j,i);
+    string res = "";
+    int resLen = 0;
+    for(int i = 0; i < s.size(); i++) {
+      // Odd length palindrome case
+      int l = i, r = i;
+      while(l >= 0 && r < s.size() && s[l] == s[r]) {
+        if(r-l+1 > resLen) {
+          resLen = r-l+1;
+          res=s.substr(l,resLen);
+        }
+        l--; r++;
+      }
+      // Even length palindrome case
+      l = i;
+      r = i+1;
+      while(l >= 0 && r < s.size() && s[l] == s[r]) {
+        if(r-l+1 > resLen) {
+          resLen = r-l+1;
+          res=s.substr(l,resLen);
+        }
+        l--; r++;
       }
     }
-    return "?"; // should never happen
+    return res;
   }
 };
