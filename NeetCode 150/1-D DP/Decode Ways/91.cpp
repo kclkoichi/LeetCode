@@ -29,14 +29,17 @@ public:
   // Bottom-up (Iterative)
   int numDecodings(string s) {
     vector<int> dp = vector<int>(s.size()+1);
-    dp[s.size()] = 1;
+    int nextnext = -1;
+    int next = 1;
     int count = 0;
     for(int i = s.size() - 1; i >= 0; i--) {
       count = 0;
-      if(s[i] == '0') continue;
-      count += dp[i+1];
-      if((i < s.size() - 1) && (s[i] == '1' || s[i] == '2' && s[i+1] <= '6')) count += dp[i+2];
-      dp[i] = count;
+      if(s[i] != '0') {
+        count += next;
+        if((i < s.size() - 1) && (s[i] == '1' || s[i] == '2' && s[i+1] <= '6')) count += nextnext;
+      }
+      nextnext = next;
+      next = count;
     }
     return count;
   }
