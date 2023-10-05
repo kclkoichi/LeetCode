@@ -1,11 +1,11 @@
-#include <map>
+#include <unordered_map>
 #include <set>
 using namespace std;
 
 class StockPrice {
 public:
   multiset<int> counts;
-  map<int, int> m; // timestamp, price
+  unordered_map<int, int> m; // timestamp, price
   vector<int> latest {-1, -1};
 
   StockPrice() {}
