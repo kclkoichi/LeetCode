@@ -30,7 +30,7 @@ public:
       // wall
       if(grid[cur[0]][cur[1]] == 1) {
         cur[2]--;
-        if(cur[2] < 0) continue;
+        if(cur[2] < 0) continue; // overused break wall
       }
       if(visited[cur[0]].find(cur[1]) == visited[cur[0]].end()) {
         // not visited yet
@@ -38,6 +38,9 @@ public:
       } else if(visited[cur[0]][cur[1]] >= cur[2]) {
         // visited already with more remaining steps
         continue;
+      } else if (visited[cur[0]][cur[1]] < cur[2]) {
+        // update info to most remaining steps
+        visited[cur[0]][cur[1]] = cur[2];
       }
       // push valid neighbours
       for(vector<int> v : getValid(cur[0], cur[1], cur[2], cur[3], rNum, cNum)) q.push(v);
