@@ -20,7 +20,17 @@ typedef long long ll;
 
 class Solution {
 public:
-  int stringCount(int n) {
-      
+  int minOperations(vector<int>& nums, int k) {
+    multiset<ll> s;
+    for(int n: nums) s.insert(n);
+    int count = 0;
+    while(*s.begin() < (ll) k) {
+      count++;
+      ll toAdd = *(s.begin()) * 2 + *(++s.begin());
+      s.insert(toAdd);
+      s.erase(s.begin());
+      s.erase(s.begin());
+    }
+    return count;
   }
 };
